@@ -24,6 +24,15 @@ namespace DemoWebApp.Controllers
         {
             var todos = await appContext.Todos.ToListAsync();
 
+            var isAuthorized = false;
+
+            if (Request.Cookies.TryGetValue("Authorization", out var authDate))
+            {
+                isAuthorized = System.DateTime.Parse(authDate) > System.DateTime.Now.AddSeconds(-5);
+            }
+
+            ViewBag.IsAuthorized = isAuthorized;
+
             return View(todos);
         }
 
@@ -36,6 +45,20 @@ namespace DemoWebApp.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult Login() => View();
+
+        [HttpPost]
+        public IActionResult Login([FromForm] LoginModel formData)
+        {
+            if (formData.Login == "johndoe" && formData.Password == "123") {
+                Response.Cookies.Append("Authorization", System.DateTime.Now.ToString());
+
+                return RedirectToAction("Index");
+            }
+
+            return new NotFoundResult();
         }
     }
 }
