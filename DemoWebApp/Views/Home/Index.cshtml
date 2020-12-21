@@ -15,7 +15,7 @@
             foreach (var todo in Model)
             {
                 <li>
-                    <input type="checkbox" checked="@(todo.Done ? "checked" : null)" />
+                    <input id="@todo.Id" type="checkbox" checked="@(todo.Done ? "checked" : null)" />
                     @todo.Title
                 </li>
             }
@@ -23,3 +23,26 @@
     </ul>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+<script>
+    const checkboxes = document.querySelectorAll('input[type=checkbox]')
+
+    async function toggleTodo(event) {
+        event.preventDefault()
+
+        const { id, checked } = event.target
+
+        try {
+            const response = await fetch(`/Home/ToggleTodo?id=${id}`)
+
+            if (response.ok) event.target.checked = !checked
+            else throw new Error()
+        } catch {
+            alert('Error occured!')
+        }
+    }
+
+    for (c of checkboxes) {
+        c.addEventListener('click', toggleTodo)
+    }
+</script>

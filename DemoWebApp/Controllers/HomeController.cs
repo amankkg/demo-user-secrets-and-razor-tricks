@@ -60,5 +60,18 @@ namespace DemoWebApp.Controllers
 
             return new NotFoundResult();
         }
+
+        public async Task<IActionResult> ToggleTodo([FromQuery] int id)
+        {
+            var todo = await appContext.Todos.FindAsync(id);
+
+            if (todo == null) return new NotFoundResult();
+
+            todo.Done = !todo.Done;
+
+            await appContext.SaveChangesAsync();
+
+            return new OkResult();
+        }
     }
 }
